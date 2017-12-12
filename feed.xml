@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hello, World!</title>
+    <description>for every one who is interested in ML, AI, Creative Coding, Statistics, Maths.. and more</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 12 Dec 2017 18:51:55 +0200</pubDate>
+    <lastBuildDate>Tue, 12 Dec 2017 18:51:55 +0200</lastBuildDate>
+    <generator>Jekyll v3.5.2</generator>
+    
+      <item>
+        <title>iOS动态更新</title>
+        <description>&lt;ul&gt;
+  &lt;li&gt;1、控件到 &lt;code class=&quot;highlighter-rouge&quot;&gt;window&lt;/code&gt; 的层级关系:&lt;/li&gt;
+  &lt;li&gt;2、分析控件的详细路径:&lt;/li&gt;
+  &lt;li&gt;3、动态修改控件:&lt;/li&gt;
+  &lt;li&gt;4、工具篇:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;视图的层级关系&quot;&gt;视图的层级关系&lt;/h3&gt;
+
+&lt;p&gt;每个 &lt;code class=&quot;highlighter-rouge&quot;&gt;App&lt;/code&gt; , 至少有一个根 &lt;code class=&quot;highlighter-rouge&quot;&gt;Window&lt;/code&gt; , 通常情况下我们只用一个 。&lt;code class=&quot;highlighter-rouge&quot;&gt;window&lt;/code&gt; 有一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootViewController&lt;/code&gt; , 这就是我们所谓的根视图 , 我们所有的控制器都是放在 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootViewController&lt;/code&gt; 里面的。&lt;/p&gt;
+
+&lt;p&gt;如果在项目里有了这么一个路径 , 我们可以做什么呢？&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在当项目很复杂 , 可以其它地方可以直接修改这个控件的状态&lt;/li&gt;
+  &lt;li&gt;当某个控件命名存在却又没有显示出来 , 可以通过路径来辅助查找&lt;/li&gt;
+  &lt;li&gt;由服务器下发一些配置 , 使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Runtime&lt;/code&gt; 去动态的修改已上线的项目&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面将介绍如何使用代码来找出这些视图(控件)的路径&lt;/p&gt;
+
+&lt;h3 id=&quot;分析控件的详细路径&quot;&gt;分析控件的详细路径&lt;/h3&gt;
+
+&lt;h4 id=&quot;1找出根-window-&quot;&gt;1、找出根 &lt;code class=&quot;highlighter-rouge&quot;&gt;Window&lt;/code&gt; :&lt;/h4&gt;
+
+&lt;p&gt;每一个视图、控件 , 他们最终的根都是main函数返回的 &lt;code class=&quot;highlighter-rouge&quot;&gt;application&lt;/code&gt; , 通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;[UIApplication sharedApplication]&lt;/code&gt; 可以得到 。 &lt;code class=&quot;highlighter-rouge&quot;&gt;application&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;windows&lt;/code&gt; 属性是一个数组 , 这里面装的是这个应用的所有 &lt;code class=&quot;highlighter-rouge&quot;&gt;Window&lt;/code&gt; , 我们通常用的是第一个也就是 &lt;code class=&quot;highlighter-rouge&quot;&gt;application.windows[0]&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;2遍历视图-&quot;&gt;2、遍历视图 :&lt;/h4&gt;
+
+&lt;p&gt;得到了 &lt;code class=&quot;highlighter-rouge&quot;&gt;window&lt;/code&gt; 对象一切都好办了 。 然后拿到 &lt;code class=&quot;highlighter-rouge&quot;&gt;window&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootViewController&lt;/code&gt; , 在获取 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootViewController&lt;/code&gt; 里面所有的 &lt;code class=&quot;highlighter-rouge&quot;&gt;childViewControllers&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;view&lt;/code&gt; 里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;subviews&lt;/code&gt; , 一直递归下去就可以得到当前屏幕里所有视图对象了 , 同时可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;runtime&lt;/code&gt; 把它们的 &lt;code class=&quot;highlighter-rouge&quot;&gt;property&lt;/code&gt;、&lt;code class=&quot;highlighter-rouge&quot;&gt;delegate&lt;/code&gt; 都获取出来。&lt;/p&gt;
+
+&lt;p&gt;结合 &lt;code class=&quot;highlighter-rouge&quot;&gt;Reveal&lt;/code&gt; 或者 &lt;code class=&quot;highlighter-rouge&quot;&gt;Xcode&lt;/code&gt; 自带的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Captuer View Hiearachy&lt;/code&gt; , 我们可以推测一下这两个的的实现原理了 :&lt;/p&gt;
+
+&lt;p&gt;1、根据应用得到根视图  &lt;br /&gt;
+2、递归获取里面的所有控件 &lt;br /&gt;
+3、按照他们的层级关系一层一层的画出来&lt;/p&gt;
+
+&lt;h3 id=&quot;动态修改控件&quot;&gt;动态修改控件&lt;/h3&gt;
+
+&lt;p&gt;1、把上面获取到的所有控件的详细信息上传到服务器 。 &lt;br /&gt;
+2、根据业务需求由服务器给我们下发对应的配置列表，以 &lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 为例 : 配置列表里必须要有 :&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;1)、&lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 的全路径 : 如 &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindow&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UIWindow&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UILayoutContainerView&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UITabBar&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UIView&lt;/code&gt; —&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;UIButton&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;2)、&lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 的唯一标识 : 如 &lt;code class=&quot;highlighter-rouge&quot;&gt;tag&lt;/code&gt; 值或自己实现的一套算法生成的唯一标识 , 目的是防止与 &lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 同一层次的视图搞混 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;3)、 根据路径及唯一标识来匹配 &lt;code class=&quot;highlighter-rouge&quot;&gt;App&lt;/code&gt; 里的控件 , 匹配和上面的查找原理是相通的。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;4)、 匹配成功代表  &lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 确实存在 , 根据业务需求做后续操作 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;提示: 匹配策略尽可能的多 , 防止意外情况某一两个标识生成失败或者生成相同 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;3、修改 &lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 的状态。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;1)、 如某个按钮点了会 &lt;code class=&quot;highlighter-rouge&quot;&gt;Crash&lt;/code&gt; 或暂时不需要被点击 , 但是又要展示出来 , 可以直接修改 &lt;code class=&quot;highlighter-rouge&quot;&gt;button&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;enabled&lt;/code&gt; 属性 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;2)、 如某业务暂时关闭 , 可以直接修改入口 &lt;code class=&quot;highlighter-rouge&quot;&gt;按钮&lt;/code&gt; frame为0 , 前提是要自动布局已做好 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;3)、 如给购买 &lt;code class=&quot;highlighter-rouge&quot;&gt;按钮&lt;/code&gt; 添加监听事件 &lt;code class=&quot;highlighter-rouge&quot;&gt;addTarget: action: forControlEvents:&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;target&lt;/code&gt; 也可以通过上面 &lt;code class=&quot;highlighter-rouge&quot;&gt;遍历视图&lt;/code&gt; 获取到 , &lt;code class=&quot;highlighter-rouge&quot;&gt;action&lt;/code&gt; 可以由服务器下发 , 也可以一开始就写死 , 等有需求的时候直接传不同的参数就行了 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;4、 绑定查找控件时 , 这个界面必须要已经初始化完成了才行 , 假如界面还没生成肯定是查找不到这个控件的 。 这里给大家提供两种思路 :&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;1、使用Runtime &lt;code class=&quot;highlighter-rouge&quot;&gt;Method Swizzing&lt;/code&gt; ,  直接把修改控件的方法与 &lt;code class=&quot;highlighter-rouge&quot;&gt;didMoveToSuperview&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;didMoveToWindow&lt;/code&gt; 动态绑定 , 等这个控件加载出来之后再去修改 , 查找路径正确的话肯定就能找到了 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;2、在具体的类里面 , 等控件的初始化方法调用完后 , 再去执行动态修改 , 如在&lt;code class=&quot;highlighter-rouge&quot;&gt;viewDidLoad&lt;/code&gt; 里面初始化控件 , 在 &lt;code class=&quot;highlighter-rouge&quot;&gt;viewWillAppear:&lt;/code&gt; 里面动态修改 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;建议使用第一种适用范围更强 。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;上架后的 &lt;code class=&quot;highlighter-rouge&quot;&gt;应用&lt;/code&gt; 可能会遇到的一些突发状况 , 未测出的&lt;code class=&quot;highlighter-rouge&quot;&gt;Crash&lt;/code&gt;、临时改点小需求 , 等等 , 我们总不能每次因为一点小改动就重新提交一次 &lt;code class=&quot;highlighter-rouge&quot;&gt;App Store&lt;/code&gt; , 先不说 &lt;code class=&quot;highlighter-rouge&quot;&gt;App Store&lt;/code&gt; 的审核时间 , 频繁的让用户去更新应用 , 用户也会烦的 。使用这篇文章所讲的来实现动态更新是再合适不过了 。&lt;/p&gt;
+
+&lt;p&gt;首先上面讲的 &lt;code class=&quot;highlighter-rouge&quot;&gt;动态更新&lt;/code&gt; 是完全脱离出来的一个模块 , 跟业务逻辑没有任何关系 , 只需要部署一次就行了 , 等开发下一个项目也可以直接拿过去使用 。这里的动态更新适用于局部的视图、控件的修改 , 如果你有其它需求可以考虑 &lt;a href=&quot;https://github.com/bang590/JSPatch&quot;&gt;JSPatch&lt;/a&gt; , 下发脚本也是一个不错的选择 。&lt;/p&gt;
+
+&lt;h3 id=&quot;工具篇&quot;&gt;工具篇&lt;/h3&gt;
+&lt;p&gt;使用一些UI调试的辅助工具 , 使我们查看视图在项目中得层次结构更为方便 。      &lt;br /&gt;
+常用的UI调试的工具：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Captuer View Hiearachy&lt;/li&gt;
+  &lt;li&gt;Reveal&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Xcode自带的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Captuer View Hiearachy&lt;/code&gt; 实现步骤:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;1、打开Xcode , 运行项目 , 选择最顶部的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Debug&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;2、&lt;code class=&quot;highlighter-rouge&quot;&gt;Debug&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;View Debugging&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;Show View Frames&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;3、&lt;code class=&quot;highlighter-rouge&quot;&gt;Debug&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;View Debugging&lt;/code&gt; -&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;Captuer View Hiearachy&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Xcode里面就变成了三维的视图了 , Xcode左侧展示出来的是层级关系的树状图 。&lt;/p&gt;
+
+&lt;p&gt;Reveal的功能相对来说更强大 , 适用于UI调试视图查找 。使用方法请看 &lt;a href=&quot;http://support.revealapp.com/kb/getting-started/reveal&quot;&gt;Reveal集成指南&lt;/a&gt; 。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;转载请注明：&lt;a href=&quot;http://baixin&quot;&gt;潘柏信的博客&lt;/a&gt; » &lt;a href=&quot;http://baixin.io/2016/01/iOS_OTA/&quot;&gt;点击阅读原文&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 09 Jan 2016 13:15:06 +0200</pubDate>
+        <link>http://localhost:4000/2016/01/iOS_OTA/</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/01/iOS_OTA/</guid>
+        
+        <category>iOS</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>
