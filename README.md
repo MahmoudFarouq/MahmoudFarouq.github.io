@@ -1,2 +1,0 @@
-# MahmoudFarouq.github.io
-myBlog
