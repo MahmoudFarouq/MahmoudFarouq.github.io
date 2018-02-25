@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Knowledgify </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <div class="jumbotron text-center">
+      <h2 id="title"> </h2>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <img id="imgLink" src="" class="img-responsive img-thumbnail" alt="Image"/>
+        </div>
+        <div class="col-lg-4">
+          <div class="row">
+              <div class="col-sm-12">
+                  <h3>Description</h3>
+              </div>
+          </div>
+          <p id="description"> </p>
+          <div class="row">
+              <div class="btn-group col-sm-9">
+                 <button type="button" class="btn btn-primary"> <a id="downBtn" href="" style="color:white">Download</a> </button>
+                 <button type="button" class="btn btn-primary"> <a id="mainBtn" href="" style="color:white">MainPage</a> </button>
+                 <button type="button" class="btn btn-primary" onclick="Start()"> Refresh </button>
+              </div>
+              <div>
+                 <iframe id="voiceLink" src=""></iframe>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="javascriptFile.js"></script>
+</body>
+</html>
